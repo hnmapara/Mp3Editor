@@ -13,17 +13,30 @@ import de.vdheide.mp3.NoMP3FrameException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.app.ListFragment;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 public class Mp3SearchActivity extends Activity {
-	private String[] mFilenameList;
-	private File[] mFileListfiles;
-	private File mPath = new File(Environment.getExternalStorageDirectory() + "/Music");
+	private static String[] mFilenameList;
+	private static File[] mFileListfiles;
+	private static File mPath = new File(Environment.getExternalStorageDirectory() + "/Music");
 			
 	private String mChosenFile;
 	private static final String FTYPE = ".mp3";
@@ -55,9 +68,113 @@ public class Mp3SearchActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		showDialog(DIALOG_LOAD_FILE);
+//		showDialog(DIALOG_LOAD_FILE);
+	
+	/**** 
+	 * The other way is this, query MediaProvider for audio files and load them into cursorloader and listen for changes
+	 * 	
+		mFilenameList = new String[0];
+		Cursor cursor = null;
+		try {
+		cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, new String[] {MediaStore.Audio.Media.DATA},
+									null, null, null);
+			if(cursor!=null && cursor.getCount() >0) {
+				mFilenameList = new String[cursor.getCount()];
+				int index = 0;
+				while(cursor.moveToNext()) {
+					mFilenameList[index++] = cursor.getString(0);
+				}
+			}
+		} finally {
+			if(cursor!=null) cursor.close();
+		}
+	*/	
+		showDetails();
+	}
+	
+	
+	
+	@Override
+	protected void onDestroy() {
+		Log.i(TAG,"Mp3SearchActivity - On Destroy");
+		mPath = new File(Environment.getExternalStorageDirectory() + "/Music");
+		super.onDestroy();
 	}
 
+	void showDetails() {
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		Log.d(TAG, "showDetails() Creating ArrayListFragment");
+		
+		Fragment prev = getFragmentManager().findFragmentById(android.R.id.content);
+        if (prev != null) {        	
+            //ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        ArrayListFragment list = new ArrayListFragment();
+        
+        ft.add(android.R.id.content, list,"myfrag").commit();
+		
+	}
+	
+	public static class ArrayListFragment extends ListFragment {
+		private String[] filenames;
+		private File[] files;
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            Log.i(TAG,"ArrayListFragment - In onActivityCreated");
+            
+        }
+
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			Log.i(TAG,"ArrayListFragment - In onCreateView..");
+			((Mp3SearchActivity)getActivity()).loadFileList();
+			filenames = mFilenameList;
+			files = mFileListfiles;
+			setListAdapter(new ArrayAdapter<String>(getActivity(),
+                    android.R.layout.simple_list_item_1, filenames));
+			View view = inflater.inflate(android.R.layout.list_content, null);
+			view.setBackgroundColor(0xffffffff);
+			return view;
+		}
+
+
+		@Override
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+			// TODO Auto-generated method stub
+			super.onViewCreated(view, savedInstanceState);			
+		}
+		
+		@Override
+		public void onDestroyView() {
+			Log.i(TAG,"ArrayListFragment - On Destroy View");
+			super.onDestroy();
+		}
+		
+		@Override
+		public void onDestroy() {
+			Log.i(TAG,"ArrayListFragment - On Destroy");
+			super.onDestroy();
+		}
+
+		@Override
+        public void onListItemClick(ListView l, View v, int position, long id) {
+            Log.i(TAG, "Item clicked: " + id + " & "+l.getItemAtPosition(position));
+            File file = files[position];
+            Log.i(TAG, "Path of the selected file :" + file.getAbsolutePath());
+            if(file.exists() && file.isDirectory()) {
+            	mPath = file;
+            	((Mp3SearchActivity)getActivity()).showDetails();
+            }else {
+            	Log.i(TAG, "It's not going in..");
+            }
+        }
+		
+    }
+/*
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		Dialog dialog = null;
@@ -119,4 +236,5 @@ public class Mp3SearchActivity extends Activity {
 		dialog = builder.show();
 		return dialog;
 	}
+*/
 }
