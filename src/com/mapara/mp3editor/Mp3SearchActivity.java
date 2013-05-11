@@ -36,7 +36,7 @@ import android.widget.TextView;
 public class Mp3SearchActivity extends Activity {
 	private static String[] mFilenameList;
 	private static File[] mFileListfiles;
-	private static File mPath = new File(Environment.getExternalStorageDirectory() + "/Music");
+	private static File mPath = Environment.getExternalStorageDirectory();// + "/Music");
 			
 	private String mChosenFile;
 	private static final String FTYPE = ".mp3";
@@ -53,11 +53,11 @@ public class Mp3SearchActivity extends Activity {
 			FilenameFilter filter = new FilenameFilter() {
 				public boolean accept(File dir, String filename) {
 					File sel = new File(dir, filename);
-					return filename.contains(FTYPE) || sel.isDirectory();
+					return (!sel.isHidden()) && (filename.contains(FTYPE) || filename.contains(".MP3") || sel.isDirectory());
 				}
 			};
-			mFilenameList = mPath.list(null);
-			mFileListfiles = mPath.listFiles();
+			mFilenameList = mPath.list(filter);
+			mFileListfiles = mPath.listFiles(filter);
 		} else {
 			mFilenameList = new String[0];
 		}
@@ -95,6 +95,36 @@ public class Mp3SearchActivity extends Activity {
 	
 	
 	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+	}
+
+	@Override
+	protected void onRestart() {
+		Log.i(TAG,"Mp3SearchActivity - onRestart");
+		super.onRestart();
+	}
+
+	@Override
+	protected void onResume() {
+		Log.i(TAG,"Mp3SearchActivity - onResume");
+		super.onResume();
+	}
+
+	@Override
+	protected void onStart() {
+		Log.i(TAG,"Mp3SearchActivity - onStart");
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		Log.i(TAG,"Mp3SearchActivity - onStop");
+		super.onStop();
+	}
+
+	@Override
 	protected void onDestroy() {
 		Log.i(TAG,"Mp3SearchActivity - On Destroy");
 		mPath = new File(Environment.getExternalStorageDirectory() + "/Music");
@@ -103,7 +133,7 @@ public class Mp3SearchActivity extends Activity {
 
 	void showDetails() {
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
-		Log.d(TAG, "showDetails() Creating ArrayListFragment");
+		Log.d(TAG, "showDetails()... Creating ArrayListFragment");
 		
 		Fragment prev = getFragmentManager().findFragmentById(android.R.id.content);
         if (prev != null) {        	
@@ -111,7 +141,7 @@ public class Mp3SearchActivity extends Activity {
         }
         ft.addToBackStack(null);
         ArrayListFragment list = new ArrayListFragment();
-        
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.add(android.R.id.content, list,"myfrag").commit();
 		
 	}
@@ -134,8 +164,13 @@ public class Mp3SearchActivity extends Activity {
 			((Mp3SearchActivity)getActivity()).loadFileList();
 			filenames = mFilenameList;
 			files = mFileListfiles;
-			setListAdapter(new ArrayAdapter<String>(getActivity(),
-                    android.R.layout.simple_list_item_1, filenames));
+			if(filenames==null) {
+				View view = inflater.inflate(R.layout.fragment_nodata, container);
+				view.setBackgroundColor(0xffffffff);
+				return view;
+			}
+			setListAdapter(new ContentAdapter(getActivity(),R.layout.list_item,filenames,files));
+//			setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, filenames));
 			View view = inflater.inflate(android.R.layout.list_content, null);
 			view.setBackgroundColor(0xffffffff);
 			return view;
@@ -143,14 +178,49 @@ public class Mp3SearchActivity extends Activity {
 
 
 		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			Log.i(TAG,"ArrayListFragment - In onCreate");
+			super.onCreate(savedInstanceState);
+		}
+
+
+		@Override
+		public void onPause() {
+			Log.i(TAG,"ArrayListFragment - In onPause");
+			super.onPause();
+		}
+
+
+		@Override
+		public void onResume() {
+			Log.i(TAG,"ArrayListFragment - In onResume");
+			super.onResume();
+		}
+
+
+		@Override
+		public void onStart() {
+			Log.i(TAG,"ArrayListFragment - In onStart");
+			super.onStart();
+		}
+
+
+		@Override
+		public void onStop() {
+			Log.i(TAG,"ArrayListFragment - In onStop");
+			super.onStop();
+		}
+
+
+		@Override
 		public void onViewCreated(View view, Bundle savedInstanceState) {
-			// TODO Auto-generated method stub
+			Log.i(TAG,"ArrayListFragment - In onViewCreated");
 			super.onViewCreated(view, savedInstanceState);			
 		}
 		
 		@Override
 		public void onDestroyView() {
-			Log.i(TAG,"ArrayListFragment - On Destroy View");
+			Log.i(TAG,"ArrayListFragment - onDestroyView");
 			super.onDestroy();
 		}
 		
