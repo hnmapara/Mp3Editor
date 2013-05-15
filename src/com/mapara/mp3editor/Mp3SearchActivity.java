@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Mp3SearchActivity extends Activity {
 	private static String[] mFilenameList;
@@ -41,7 +42,7 @@ public class Mp3SearchActivity extends Activity {
 	private String mChosenFile;
 	private static final String FTYPE = ".mp3";
 	private static final int DIALOG_LOAD_FILE = 1000;
-	private static final String TAG = Mp3SearchActivity.class.getSimpleName();
+	public static final String TAG = Mp3SearchActivity.class.getSimpleName();
 
 	private void loadFileList() {
 		try {
@@ -127,7 +128,7 @@ public class Mp3SearchActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		Log.i(TAG,"Mp3SearchActivity - On Destroy");
-		mPath = new File(Environment.getExternalStorageDirectory() + "/Music");
+		mPath = Environment.getExternalStorageDirectory();
 		super.onDestroy();
 	}
 
@@ -173,6 +174,7 @@ public class Mp3SearchActivity extends Activity {
 //			setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, filenames));
 			View view = inflater.inflate(android.R.layout.list_content, null);
 			view.setBackgroundColor(0xffffffff);
+			
 			return view;
 		}
 
@@ -232,16 +234,24 @@ public class Mp3SearchActivity extends Activity {
 
 		@Override
         public void onListItemClick(ListView l, View v, int position, long id) {
-            Log.i(TAG, "Item clicked: " + id + " & "+l.getItemAtPosition(position));
+            Log.i(TAG, "Item clicked: " + id + " & "+" position :" + position +" -"+l.getItemAtPosition(position));
             File file = files[position];
             Log.i(TAG, "Path of the selected file :" + file.getAbsolutePath());
             if(file.exists() && file.isDirectory()) {
             	mPath = file;
             	((Mp3SearchActivity)getActivity()).showDetails();
             }else {
-            	Log.i(TAG, "It's not going in..");
+            	
+            	TextView tv =(TextView)v.findViewById(R.id.filename);
+            	Log.i(TAG, "It's not going in.." + tv.getText());
             }
         }
+		
+		public void albumInfoClick(View v) {
+//			LinearLayout parentRow = (LinearLayout) v.getParent();
+//			TextView child = (TextView) parentRow.getChildAt(1);
+			Toast.makeText(getActivity(), "Wassup", Toast.LENGTH_SHORT).show();
+		}
 		
     }
 /*
@@ -307,4 +317,5 @@ public class Mp3SearchActivity extends Activity {
 		return dialog;
 	}
 */
+
 }

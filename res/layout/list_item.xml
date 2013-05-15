@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+<!--     android:descendantFocusability="blocksDescendants" >  -->
 <TextView 
     android:id="@+id/titletext"
     android:layout_width="match_parent"
@@ -12,17 +13,16 @@
     android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
     android:text="Title"
 />
-    
+
+
 <TextView 
-    android:id="@+id/filename"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textAppearance="@style/FileNameStyle"
-    android:gravity="center_vertical"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-    
-/>
+	    android:id="@+id/filename"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:textAppearance="@style/FileNameStyle"
+	    android:gravity="center_vertical"
+		android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+		android:paddingEnd="?android:attr/listPreferredItemPaddingEnd" />	    
     
 <TextView 
     android:id="@+id/albuminfo"
@@ -32,6 +32,26 @@
     android:paddingStart="?android:attr/listPreferredItemPaddingStart"
     android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
     android:text="Album"
+    android:focusable="false"
 />
+
+<EditText 
+    android:id="@+id/editalbuminfo"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="@style/FileNameStyle"
+    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd" 
+    android:visibility="gone"
+    android:focusable="true"/>
+
+<Button
+	    android:id="@+id/save"
+        android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:text="Save"
+    	android:textAppearance="@style/FileNameStyle"
+/>
+ 
 
 </LinearLayout>
