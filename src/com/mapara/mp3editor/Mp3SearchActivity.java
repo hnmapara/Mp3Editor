@@ -3,6 +3,7 @@ package com.mapara.mp3editor;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import de.vdheide.mp3.ID3Exception;
 import de.vdheide.mp3.ID3v2DecompressionException;
@@ -35,17 +36,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Mp3SearchActivity extends Activity {
-	private static String[] mFilenameList;
-	private static File[] mFileListfiles;
-	private static File mPath = Environment.getExternalStorageDirectory();// + "/Music");
-			
+	public static String[] mFilenameList;
+    public static File[] mFileListfiles;
+    public static File mPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+
 	private String mChosenFile;
 	private static final String FTYPE = ".mp3";
 	private static final int DIALOG_LOAD_FILE = 1000;
 	public static final String TAG = Mp3SearchActivity.class.getSimpleName();
 
-	private void loadFileList() {
-		try {
+	protected void loadFileList() {
+
+        try {
 			mPath.mkdirs();
 		} catch (SecurityException e) {
 			Log.e(TAG, "unable to write on the sd card " + e.toString());
@@ -68,7 +70,7 @@ public class Mp3SearchActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+//		setContentView(R.layout.activity_main);
 //		showDialog(DIALOG_LOAD_FILE);
 	
 	/**** 
@@ -140,119 +142,17 @@ public class Mp3SearchActivity extends Activity {
         if (prev != null) {        	
             //ft.remove(prev);
         }
-        ft.addToBackStack(null);
-        ArrayListFragment list = new ArrayListFragment();
+
+        FileListFragment list = new FileListFragment();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.add(android.R.id.content, list,"myfrag").commit();
+        ft.add(android.R.id.content, list).addToBackStack(null).commit();
 		
 	}
-	
-	public static class ArrayListFragment extends ListFragment {
-		private String[] filenames;
-		private File[] files;
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            Log.i(TAG,"ArrayListFragment - In onActivityCreated");
-            
-        }
 
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			Log.i(TAG,"ArrayListFragment - In onCreateView..");
-			((Mp3SearchActivity)getActivity()).loadFileList();
-			filenames = mFilenameList;
-			files = mFileListfiles;
-			if(filenames==null) {
-				View view = inflater.inflate(R.layout.fragment_nodata, container);
-				view.setBackgroundColor(0xffffffff);
-				return view;
-			}
-			setListAdapter(new ContentAdapter(getActivity(),R.layout.list_item,filenames,files));
-//			setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, filenames));
-			View view = inflater.inflate(android.R.layout.list_content, null);
-			view.setBackgroundColor(0xffffffff);
-			
-			return view;
-		}
-
-
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			Log.i(TAG,"ArrayListFragment - In onCreate");
-			super.onCreate(savedInstanceState);
-		}
-
-
-		@Override
-		public void onPause() {
-			Log.i(TAG,"ArrayListFragment - In onPause");
-			super.onPause();
-		}
-
-
-		@Override
-		public void onResume() {
-			Log.i(TAG,"ArrayListFragment - In onResume");
-			super.onResume();
-		}
-
-
-		@Override
-		public void onStart() {
-			Log.i(TAG,"ArrayListFragment - In onStart");
-			super.onStart();
-		}
-
-
-		@Override
-		public void onStop() {
-			Log.i(TAG,"ArrayListFragment - In onStop");
-			super.onStop();
-		}
-
-
-		@Override
-		public void onViewCreated(View view, Bundle savedInstanceState) {
-			Log.i(TAG,"ArrayListFragment - In onViewCreated");
-			super.onViewCreated(view, savedInstanceState);			
-		}
-		
-		@Override
-		public void onDestroyView() {
-			Log.i(TAG,"ArrayListFragment - onDestroyView");
-			super.onDestroy();
-		}
-		
-		@Override
-		public void onDestroy() {
-			Log.i(TAG,"ArrayListFragment - On Destroy");
-			super.onDestroy();
-		}
-
-		@Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            Log.i(TAG, "Item clicked: " + id + " & "+" position :" + position +" -"+l.getItemAtPosition(position));
-            File file = files[position];
-            Log.i(TAG, "Path of the selected file :" + file.getAbsolutePath());
-            if(file.exists() && file.isDirectory()) {
-            	mPath = file;
-            	((Mp3SearchActivity)getActivity()).showDetails();
-            }else {
-            	
-            	TextView tv =(TextView)v.findViewById(R.id.filename);
-            	Log.i(TAG, "It's not going in.." + tv.getText());
-            }
-        }
-		
-		public void albumInfoClick(View v) {
+    public void albumInfoClick(View v) {
 //			LinearLayout parentRow = (LinearLayout) v.getParent();
 //			TextView child = (TextView) parentRow.getChildAt(1);
-			Toast.makeText(getActivity(), "Wassup", Toast.LENGTH_SHORT).show();
-		}
-		
+        Toast.makeText(this, "Wassup...", Toast.LENGTH_SHORT).show();
     }
 /*
 	@Override

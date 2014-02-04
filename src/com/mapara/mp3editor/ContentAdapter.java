@@ -114,12 +114,6 @@ public class ContentAdapter extends ArrayAdapter<String>{
 		return super.getItemViewType(position);
 	}
 	
-	public void albumInfoClick(View v) {
-//		LinearLayout parentRow = (LinearLayout) v.getParent();
-//		TextView child = (TextView) parentRow.getChildAt(1);
-		Toast.makeText(getContext(), "Wassup", Toast.LENGTH_SHORT).show();
-	}
-	
 	static class ViewHolder {
 		TextView title;
 		TextView filename;
