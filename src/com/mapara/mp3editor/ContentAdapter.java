@@ -49,24 +49,9 @@ public class ContentAdapter extends ArrayAdapter<String>{
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.list_item, parent, false);
 			holder.title = (TextView) convertView.findViewById(R.id.titletext);
-			holder.albumname = (TextView) convertView.findViewById(R.id.albuminfo);
+			holder.albumname = (EditText) convertView.findViewById(R.id.editalbuminfo);
 			holder.filename = (TextView) convertView.findViewById(R.id.filename);
 			holder.saveButton = (Button) convertView.findViewById(R.id.save);
-			holder.albumname.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View arg0) {
-					LinearLayout ll = (LinearLayout) arg0.getParent();
-					EditText albumedit = (EditText) ll.findViewById(R.id.editalbuminfo);
-					arg0.setVisibility(View.GONE);
-					albumedit.setEnabled(true);
-					albumedit.setText(((TextView)arg0).getText());
-					albumedit.setVisibility(View.VISIBLE);
-					Toast.makeText(getContext(), ((TextView)ll.findViewById(R.id.filename)).getText(), Toast.LENGTH_SHORT).show();
-					holder.title.setText("hi");
-					
-				}
-			});
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -80,28 +65,13 @@ public class ContentAdapter extends ArrayAdapter<String>{
 		if(f.exists() && !f.isDirectory()) {
 			
 				Mp3Info mp3Info;
-				try {
-					mp3Info = Mp3Utility.getMP3FileInfo(f.getAbsolutePath());
-					Log.d(Mp3SearchActivity.TAG, "AlbumName : "+ mp3Info.albumName);
+
+					mp3Info = Mp3Utility.getMP3FileInfo2(f.getAbsolutePath());
+					Log.d(Mp3SearchActivity.TAG, "AlbumName : " + mp3Info.albumName);
 					Log.d(Mp3SearchActivity.TAG, "ArtistName : "+ mp3Info.artistName);
 					holder.albumname.setText(mp3Info.albumName);
 					holder.title.setText(mp3Info.artistName);
-				} catch (ID3v2WrongCRCException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ID3v2DecompressionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ID3v2IllegalVersionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoMP3FrameException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                    holder.saveButton.setTag(f.getAbsolutePath());	
 				
 			
 		}
@@ -117,7 +87,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
 	static class ViewHolder {
 		TextView title;
 		TextView filename;
-		TextView albumname;
+		EditText albumname;
 		Button saveButton;
 	}
 

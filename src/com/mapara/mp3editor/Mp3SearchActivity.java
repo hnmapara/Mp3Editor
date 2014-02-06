@@ -31,6 +31,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -150,9 +152,13 @@ public class Mp3SearchActivity extends Activity {
 	}
 
     public void albumInfoClick(View v) {
-//			LinearLayout parentRow = (LinearLayout) v.getParent();
-//			TextView child = (TextView) parentRow.getChildAt(1);
-        Toast.makeText(this, "Wassup...", Toast.LENGTH_SHORT).show();
+	    LinearLayout parentRow = (LinearLayout) v.getParent();
+		EditText child = (EditText) parentRow.getChildAt(2);
+//        Toast.makeText(this, "Wassup..." + child.getText().toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
+
+            Mp3Utility.setMP3FileInfo2(v.getTag().toString(), new Mp3Info(child.getText().toString(), ""));
+
     }
 /*
 	@Override
@@ -182,7 +188,7 @@ public class Mp3SearchActivity extends Activity {
 							
 							mp3Info.albumName = "Mumbai";
 							Log.d(TAG, "Path of Mp3 :"+ mPath+File.separator+mChosenFile);
-//							String newName = Mp3Utility.setMP3FileInfo(mPath+File.separator+mChosenFile, mp3Info);
+							String newName = Mp3Utility.setMP3FileInfo(mPath+File.separator+mChosenFile, mp3Info);
 							String newName = Mp3Utility.setMP3FileInfo(mFileListfiles[which].getAbsolutePath(), mp3Info);
 							Log.d(TAG, "New Name : "+ newName);
 						} catch (ID3v2WrongCRCException e) {
