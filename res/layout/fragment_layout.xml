@@ -9,7 +9,9 @@
      <ListView android:id="@id/android:list"
                android:layout_width="match_parent"
                android:layout_height="match_parent"
-               android:background="#00FF00"
+               android:background="#ff68ffe7"
                android:layout_weight="1"
-               android:drawSelectorOnTop="false"/>
+                android:listSelector="#76BA56"
+               android:drawSelectorOnTop="false"
+         android:overScrollFooter="#ff9527" />
  </LinearLayout>

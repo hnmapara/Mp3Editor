@@ -1,48 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="10dp"
     android:orientation="vertical"
      >
-<TextView 
+<TextView
+        android:id="@+id/titleLable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/FileNameStyle"
+        android:layout_alignParentTop="true"
+        android:text="Title : "
+        />
+<EditText
     android:id="@+id/titletext"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="@style/FileNameStyle"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-    android:text="Title"
+    android:layout_alignParentTop="true"
+    android:layout_toRightOf="@+id/titleLable"
+    android:hint="&lt;Click to set&gt;"
+    android:singleLine="true"
+    android:ellipsize="middle"
+    android:background="#00000000"
 />
 
-
+<ImageView
+    android:id="@+id/row_img"
+    android:layout_width="45dp"
+    android:layout_height="45dp"
+    android:layout_below="@+id/titleLable"
+    android:src="@drawable/folder_img2"
+    />
 <TextView 
 	    android:id="@+id/filename"
 	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:textAppearance="@style/FileNameStyle"
-	    android:gravity="center_vertical"
-		android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-		android:paddingEnd="?android:attr/listPreferredItemPaddingEnd" />	    
-<!--
+	    android:layout_height="35dp"
+    android:layout_gravity="center"
+    android:gravity="left|center_vertical"
+    android:layout_below="@+id/titletext"
+    android:layout_toRightOf="@+id/row_img"
+    android:layout_marginLeft="10dp"
+    android:textAppearance="@style/FileNameStyle"
+    android:textSize="12sp"
+    android:singleLine="true"
+    android:ellipsize="middle"/>
+
 <TextView 
-    android:id="@+id/albuminfo"
-    android:layout_width="match_parent"
+    android:id="@+id/albumLable"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="@style/FileNameStyle"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-    android:text="Album" android:onClick="albumInfoClick"
-    android:focusable="false"
+    android:layout_below="@id/row_img"
+    android:text="Album : "
 />
--->
+
 <EditText 
     android:id="@+id/editalbuminfo"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="@style/FileNameStyle"
+    android:layout_below="@id/row_img"
+    android:layout_toRightOf="@+id/albumLable"
+    android:hint="&lt;Click to set&gt;"
     android:singleLine="true"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
     android:background="#00000000"
     />
 
@@ -50,10 +72,19 @@
 	    android:id="@+id/save"
         android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
+        android:layout_below="@id/editalbuminfo"
     	android:text="Save"
         android:onClick="albumInfoClick"
+        android:layout_alignParentBottom="true"
     	android:textAppearance="@style/FileNameStyle"
 />
- 
-
-</LinearLayout>
+<TextView
+        android:id="@+id/entryinfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/FileNameStyle"
+        android:paddingRight="10dp"
+        android:textColor="#808080"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentEnd="true" />
+</RelativeLayout>

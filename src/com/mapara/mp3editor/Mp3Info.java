@@ -3,12 +3,12 @@ package com.mapara.mp3editor;
 public class Mp3Info {
 
 	public String albumName;
-	public String artistName;
+	public String SongTitle;
 	
 	public Mp3Info(){}
 	
-	public Mp3Info(String albumName, String artistName) {
+	public Mp3Info(String albumName, String SongTitle) {
 		this.albumName = albumName;
-		this.artistName = artistName;
+		this.SongTitle = SongTitle;
 	}
 }

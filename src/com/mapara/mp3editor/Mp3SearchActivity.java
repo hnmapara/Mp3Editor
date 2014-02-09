@@ -157,7 +157,8 @@ public class Mp3SearchActivity extends Activity {
 //        Toast.makeText(this, "Wassup..." + child.getText().toString(), Toast.LENGTH_SHORT).show();
         Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
 
-            Mp3Utility.setMP3FileInfo2(v.getTag().toString(), new Mp3Info(child.getText().toString(), ""));
+        Mp3Utility.setMP3FileInfo2(v.getTag().toString(), new Mp3Info(child.getText().toString(), ""));
+        Mp3Utility.scanSDCardFile(getApplicationContext(),v.getTag().toString());
 
     }
 /*
@@ -184,7 +185,7 @@ public class Mp3SearchActivity extends Activity {
 						try {
 							Mp3Info mp3Info = Mp3Utility.getMP3FileInfo(mPath+File.separator+mChosenFile);
 							Log.d(TAG, "AlbumName : "+ mp3Info.albumName);
-							Log.d(TAG, "ArtistName : "+ mp3Info.artistName);
+							Log.d(TAG, "ArtistName : "+ mp3Info.SongTitle);
 							
 							mp3Info.albumName = "Mumbai";
 							Log.d(TAG, "Path of Mp3 :"+ mPath+File.separator+mChosenFile);

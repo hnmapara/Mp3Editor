@@ -3,7 +3,12 @@ package com.mapara.mp3editor;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 
+import android.content.Context;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.cmc.music.common.ID3WriteException;
@@ -72,19 +77,19 @@ public class Mp3Utility {
         }
         else
         {
-            String artist,album = null;
+            String title=null,album = null;
             try{
                 IMusicMetadata metadata = src_set.getSimplified();
-                 artist = metadata.getArtist();
+                 title = metadata.getSongTitle();
                  album = metadata.getAlbum();
                 String song_title = metadata.getSongTitle();
                 Number track_number = metadata.getTrackNumber();
-                Log.i(TAG, "artist - " + artist);
                 Log.i(TAG, "album - " +album);
+                Log.i(TAG, "Song title - " + title);
             }catch (Exception e) {
                 e.printStackTrace();
             }
-            return new Mp3Info(album, null);
+            return new Mp3Info(album, title);
         }
         return null;
     }
@@ -93,7 +98,7 @@ public class Mp3Utility {
         File src = new File(mp3FilePath);
         MusicMetadata meta = new MusicMetadata("name");
         Log.i(TAG,"Album Name to be set :" + mp3Info.albumName);
-        meta.setAlbum(mp3Info.albumName);
+        if(mp3Info.albumName!=null) meta.setAlbum(mp3Info.albumName);
 //        meta.setArtist("CS");
         try {
             MusicMetadataSet src_set = new MyID3().read(src);
@@ -110,5 +115,29 @@ public class Mp3Utility {
             e.printStackTrace();
         }  // write updated metadata
         return null;
+    }
+
+    public static void scanSDCardFile(Context ctx, String filePath) {
+        MediaScannerConnection.scanFile(ctx,new String[] { filePath.toString() }, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    public void onScanCompleted(String path, Uri uri) {
+                        Log.i("ExternalStorage", "Scanned " + path + ":");
+                        Log.i("ExternalStorage", "-> uri=" + uri);
+                    }
+                });
+    }
+
+    static String[] sizeUnits = new String[] { "B", "KB", "MB"};
+    /**
+     *
+     * @param  filesize
+     * @return B/KB/MB/GB format
+     */
+    public static String formattedFileSize(long filesize) {
+        if(filesize <= 0) return "0";
+        int digGroup = (int) (Math.log10(filesize)/Math.log10(1024));
+
+        return new DecimalFormat("#,##0.00")
+                .format(filesize/Math.pow(1024, digGroup)) + " " + sizeUnits[digGroup];
     }
 }
