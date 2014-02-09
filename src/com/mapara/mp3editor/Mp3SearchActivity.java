@@ -43,7 +43,6 @@ public class Mp3SearchActivity extends Activity {
     public static File mPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
 
 	private String mChosenFile;
-	private static final String FTYPE = ".mp3";
 	private static final int DIALOG_LOAD_FILE = 1000;
 	public static final String TAG = Mp3SearchActivity.class.getSimpleName();
 
@@ -55,14 +54,8 @@ public class Mp3SearchActivity extends Activity {
 			Log.e(TAG, "unable to write on the sd card " + e.toString());
 		}
 		if (mPath.exists()) {
-			FilenameFilter filter = new FilenameFilter() {
-				public boolean accept(File dir, String filename) {
-					File sel = new File(dir, filename);
-					return (!sel.isHidden()) && (filename.contains(FTYPE) || filename.contains(".MP3") || sel.isDirectory());
-				}
-			};
-			mFilenameList = mPath.list(filter);
-			mFileListfiles = mPath.listFiles(filter);
+			mFilenameList = mPath.list(Mp3Utility.musicOrDirectoryfilter);
+			mFileListfiles = mPath.listFiles(Mp3Utility.musicOrDirectoryfilter);
 		} else {
 			mFilenameList = new String[0];
 		}

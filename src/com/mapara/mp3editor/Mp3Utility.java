@@ -1,6 +1,7 @@
 package com.mapara.mp3editor;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
@@ -140,4 +141,12 @@ public class Mp3Utility {
         return new DecimalFormat("#,##0.00")
                 .format(filesize/Math.pow(1024, digGroup)) + " " + sizeUnits[digGroup];
     }
+
+    private static final String FTYPE = ".mp3";
+    public static FilenameFilter musicOrDirectoryfilter = new FilenameFilter() {
+        public boolean accept(File dir, String filename) {
+            File sel = new File(dir, filename);
+            return (!sel.isHidden()) && (filename.contains(FTYPE) || filename.contains(".MP3") || sel.isDirectory());
+        }
+    };
 }

@@ -63,7 +63,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
 //            convertView.getBackground().setColorFilter(Color.parseColor("#D1D1E0"), PorterDuff.Mode.DARKEN);
             convertView.setBackgroundResource(R.drawable.list_folder_drawable);
 
-            holder.entryInfo.setText(f.list().length + " entries" );
+            holder.entryInfo.setText(f.list(Mp3Utility.musicOrDirectoryfilter).length + " entries" );
 
         }
 		if(f.exists() && !f.isDirectory()) {
@@ -78,6 +78,9 @@ public class ContentAdapter extends ArrayAdapter<String>{
                         holder.title.setText(mp3Info.SongTitle);
                     holder.saveButton.setTag(f.getAbsolutePath());
                         holder.rowIcon.setImageResource(R.drawable.music);
+                        int p = getContext().getResources()
+                                .getDimensionPixelSize(R.dimen.music_icon_padding);
+                        holder.rowIcon.setPadding(p,p,p,p);
                      holder.filename.setText("File name: " + getItem(position));
                      holder.entryInfo.setText(Mp3Utility.formattedFileSize(f.length()));
                     } catch (Exception e){}

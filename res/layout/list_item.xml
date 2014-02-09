@@ -12,7 +12,7 @@
         android:textAppearance="@style/FileNameStyle"
         android:layout_alignParentTop="true"
         android:text="Title : "
-        />
+    android:textStyle="bold" />
 <EditText
     android:id="@+id/titletext"
     android:layout_width="match_parent"
@@ -54,7 +54,7 @@
     android:textAppearance="@style/FileNameStyle"
     android:layout_below="@id/row_img"
     android:text="Album : "
-/>
+    android:textStyle="bold" />
 
 <EditText 
     android:id="@+id/editalbuminfo"
