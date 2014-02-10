@@ -31,7 +31,6 @@
     android:layout_width="45dp"
     android:layout_height="45dp"
     android:layout_below="@+id/titleLable"
-    android:src="@drawable/folder_img2"
     />
 <TextView 
 	    android:id="@+id/filename"

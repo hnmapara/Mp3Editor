@@ -143,17 +143,12 @@ public class Mp3Utility {
     }
 
     private static final String FTYPE = ".mp3";
-    private static FilenameFilter musicOrDirectoryfilter = new FilenameFilter() {
-        public boolean accept(File dir, String filename) {
-            File sel = new File(dir, filename);
-            return (!sel.isHidden()) && (filename.contains(FTYPE) || filename.contains(".MP3") || sel.isDirectory());
-        }
-    };
     public static FilenameFilter getFileNameFilter(final boolean withDirectory) {
         return new FilenameFilter() {
             public boolean accept(File dir, String filename) {
                 File sel = new File(dir, filename);
-                return (!sel.isHidden()) && (filename.contains(FTYPE) || filename.contains(".MP3") || (withDirectory? sel.isDirectory() : false));
+                return (!sel.isHidden()) && (filename.contains(FTYPE) || filename.contains(".MP3")
+                        || (withDirectory? (sel.isDirectory() ? (sel.list()==null? false : true) : false) : false));
             }
         };
     }

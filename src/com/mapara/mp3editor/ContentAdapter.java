@@ -60,14 +60,17 @@ public class ContentAdapter extends ArrayAdapter<String>{
 			holder.albumname.setVisibility(View.INVISIBLE);
 			holder.saveButton.setVisibility(View.GONE);
             holder.filename.setText(getItem(position));
+            holder.rowIcon.setImageResource(R.drawable.folder_img2);
+            holder.rowIcon.setPadding(0,0,0,0);
 //            convertView.setBackgroundColor(Color.parseColor("#FFF9F6"));
 //            convertView.getBackground().setColorFilter(Color.parseColor("#D1D1E0"), PorterDuff.Mode.DARKEN);
             convertView.setBackgroundResource(R.drawable.list_folder_drawable);
-
-            holder.entryInfo.setText(f.list(Mp3Utility.getFileNameFilter(true)).length + " entries" );
+            String[] list = f.list(Mp3Utility.getFileNameFilter(true));
+            String info = list == null ? "No Access" : list.length+" entries";
+            holder.entryInfo.setText(info);
 
         }
-		if(f.exists() && !f.isDirectory()) {
+		else if(f.exists() && !f.isDirectory()) {
 				Mp3Info mp3Info;
                     try {
 					mp3Info = Mp3Utility.getMP3FileInfo2(f.getAbsolutePath());

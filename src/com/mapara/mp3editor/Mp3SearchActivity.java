@@ -42,7 +42,9 @@ import android.widget.Toast;
 public class Mp3SearchActivity extends Activity {
 	public static String[] mFilenameList;
     public static File[] mFileListfiles;
-    public static File mPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+//    public static File defaultRootFile = Environment.getExternalStorageDirectory();
+    public static File defaultRootFile = new File("/mnt");
+    public static File mPath = defaultRootFile;
 
 	private String mChosenFile;
 	private static final int DIALOG_LOAD_FILE = 1000;
@@ -127,7 +129,7 @@ public class Mp3SearchActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		Log.i(TAG,"Mp3SearchActivity - On Destroy");
-		mPath = Environment.getExternalStorageDirectory();
+		mPath = defaultRootFile;
 		super.onDestroy();
 	}
 
