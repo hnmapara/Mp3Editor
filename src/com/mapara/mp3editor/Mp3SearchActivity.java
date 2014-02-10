@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -218,5 +219,25 @@ public class Mp3SearchActivity extends Activity {
 		return dialog;
 	}
 */
+
+    //This method is Needed because - when pressing back button, Android pops up the fragment
+    //from the back stack and when the last fragment is poped out, there remains only a blank
+    //activity. So when there is a back key pressed and the backstack count is 1, just finish
+    //the activity
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+            if (keyCode == KeyEvent.KEYCODE_BACK)
+            {
+                if (getFragmentManager().getBackStackEntryCount() == 1)
+                    this.finish();
+                else
+                    getFragmentManager().popBackStack();
+                    //removeCurrentFragment();
+                return false;
+            }
+
+            return super.onKeyDown(keyCode, event);
+    }
 
 }

@@ -3,6 +3,7 @@ package com.mapara.mp3editor;
 import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,25 +35,46 @@ public class FileListFragment extends ListFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, final View view, int i, long l) {
                 final EditText input = new EditText(getActivity());
-                final String filePath = ((ContentAdapter.ViewHolder)view.getTag()).filePath;
+                String filePath = ((ContentAdapter.ViewHolder)view.getTag()).filePath;
                 final File f = new File(filePath);
-                new AlertDialog.Builder(getActivity())
-                        .setTitle("Update Album Name for : " + f.getName())
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Update Album Name for : " + f.getName())
                         .setMessage("Enter album name below and it will applied to all files under this directory")
                         .setView(input)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                Editable value = input.getText();
-                                File[] files = f.listFiles(Mp3Utility.getFileNameFilter(false));
-                                String[] paths = new String[files.length];
-                                int index=0;
-                                for(File file: files) {
-                                    if(!file.isDirectory()) {
-                                        Mp3Utility.setMP3FileInfo2(file.getAbsolutePath(), new Mp3Info(value.toString(), ""));
-                                        paths[index++] = file.getAbsolutePath();
+                                final Editable value = input.getText();
+                                final ProgressBar progressBar = new ProgressBar(getActivity());
+                                new AsyncTask<Void, Void,Void>() {
+
+                                    @Override
+                                    protected Void doInBackground(Void[] objects) {
+                                        File[] files = f.listFiles(Mp3Utility.getFileNameFilter(false));
+                                        String[] paths = new String[files.length];
+                                        int index=0;
+                                        for(File file: files) {
+                                            if(!file.isDirectory()) {
+                                                Mp3Utility.setMP3FileInfo2(file.getAbsolutePath(), new Mp3Info(value.toString(), ""));
+                                                paths[index++] = file.getAbsolutePath();
+                                            }
+                                        }
+                                        Mp3Utility.scanSDCardFile(getActivity(),paths);
+                                        return null;
                                     }
-                                }
-                                Mp3Utility.scanSDCardFile(getActivity(),paths);
+
+                                    @Override
+                                    protected void onPreExecute() {
+                                        super.onPreExecute();
+                                        input.setVisibility(View.GONE);
+                                        builder.setView(progressBar);
+
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(Void v) {
+                                        super.onPostExecute(v);
+                                    }
+                                }.execute();
                             }
                             })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
