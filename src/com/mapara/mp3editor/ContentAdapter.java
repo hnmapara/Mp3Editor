@@ -61,7 +61,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
 			holder.saveButton.setVisibility(View.GONE);
             holder.filename.setText(getItem(position));
             holder.rowIcon.setImageResource(R.drawable.folder_img2);
-            holder.rowIcon.setPadding(0,0,0,0);
+            holder.rowIcon.setPadding(0, 0, 0, 0);
 //            convertView.setBackgroundColor(Color.parseColor("#FFF9F6"));
 //            convertView.getBackground().setColorFilter(Color.parseColor("#D1D1E0"), PorterDuff.Mode.DARKEN);
             convertView.setBackgroundResource(R.drawable.list_folder_drawable);
@@ -72,6 +72,11 @@ public class ContentAdapter extends ArrayAdapter<String>{
         }
 		else if(f.exists() && !f.isDirectory()) {
 				Mp3Info mp3Info;
+                convertView.findViewById(R.id.albumLable).setVisibility(View.VISIBLE);
+                convertView.findViewById(R.id.titleLable).setVisibility(View.VISIBLE);
+                holder.title.setVisibility(View.VISIBLE);
+                holder.albumname.setVisibility(View.VISIBLE);
+                holder.saveButton.setVisibility(View.VISIBLE);
                     try {
 					mp3Info = Mp3Utility.getMP3FileInfo2(f.getAbsolutePath());
 					Log.d(Mp3SearchActivity.TAG, "AlbumName : " + mp3Info.albumName);
@@ -90,7 +95,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
 		}
 
 		return convertView;
-	}
+    }
 
 	@Override
 	public int getItemViewType(int position) {
