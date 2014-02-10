@@ -34,6 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,8 +55,8 @@ public class Mp3SearchActivity extends Activity {
 			Log.e(TAG, "unable to write on the sd card " + e.toString());
 		}
 		if (mPath.exists()) {
-			mFilenameList = mPath.list(Mp3Utility.musicOrDirectoryfilter);
-			mFileListfiles = mPath.listFiles(Mp3Utility.musicOrDirectoryfilter);
+			mFilenameList = mPath.list(Mp3Utility.getFileNameFilter(true));
+			mFileListfiles = mPath.listFiles(Mp3Utility.getFileNameFilter(true));
 		} else {
 			mFilenameList = new String[0];
 		}
@@ -145,13 +146,13 @@ public class Mp3SearchActivity extends Activity {
 	}
 
     public void albumInfoClick(View v) {
-	    LinearLayout parentRow = (LinearLayout) v.getParent();
-		EditText child = (EditText) parentRow.getChildAt(2);
-//        Toast.makeText(this, "Wassup..." + child.getText().toString(), Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, v.getTag().toString(), Toast.LENGTH_SHORT).show();
+	    RelativeLayout parentRow = (RelativeLayout) v.getParent();
+        EditText child = (EditText) parentRow.findViewById(R.id.editalbuminfo);
+        String filePath = ((ContentAdapter.ViewHolder)parentRow.getTag()).filePath;
+        Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
 
-        Mp3Utility.setMP3FileInfo2(v.getTag().toString(), new Mp3Info(child.getText().toString(), ""));
-        Mp3Utility.scanSDCardFile(getApplicationContext(),v.getTag().toString());
+        Mp3Utility.setMP3FileInfo2(filePath, new Mp3Info(child.getText().toString(), ""));
+        Mp3Utility.scanSDCardFile(getApplicationContext(), new String[] {filePath});
 
     }
 /*

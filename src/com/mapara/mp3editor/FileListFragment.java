@@ -1,13 +1,19 @@
 package com.mapara.mp3editor;
 
+import android.app.AlertDialog;
 import android.app.ListFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -23,6 +29,39 @@ public class FileListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.i(TAG, "ArrayListFragment - In onActivityCreated");
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, final View view, int i, long l) {
+                final EditText input = new EditText(getActivity());
+                final String filePath = ((ContentAdapter.ViewHolder)view.getTag()).filePath;
+                final File f = new File(filePath);
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Update Album Name for : " + f.getName())
+                        .setMessage("Enter album name below and it will applied to all files under this directory")
+                        .setView(input)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                Editable value = input.getText();
+                                File[] files = f.listFiles(Mp3Utility.getFileNameFilter(false));
+                                String[] paths = new String[files.length];
+                                int index=0;
+                                for(File file: files) {
+                                    if(!file.isDirectory()) {
+                                        Mp3Utility.setMP3FileInfo2(file.getAbsolutePath(), new Mp3Info(value.toString(), ""));
+                                        paths[index++] = file.getAbsolutePath();
+                                    }
+                                }
+                                Mp3Utility.scanSDCardFile(getActivity(),paths);
+                            }
+                            })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                // Do nothing.
+                            }
+                        }).show();
+                return true;
+            }
+        });
 
     }
 
@@ -117,4 +156,5 @@ public class FileListFragment extends ListFragment {
             Log.i(TAG, "It's not going in.." + tv.getText());
         }
     }
+
 }

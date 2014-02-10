@@ -118,8 +118,8 @@ public class Mp3Utility {
         return null;
     }
 
-    public static void scanSDCardFile(Context ctx, String filePath) {
-        MediaScannerConnection.scanFile(ctx,new String[] { filePath.toString() }, null,
+    public static void scanSDCardFile(Context ctx, String[] filePaths) {
+        MediaScannerConnection.scanFile(ctx, filePaths, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
                         Log.i("ExternalStorage", "Scanned " + path + ":");
@@ -143,10 +143,18 @@ public class Mp3Utility {
     }
 
     private static final String FTYPE = ".mp3";
-    public static FilenameFilter musicOrDirectoryfilter = new FilenameFilter() {
+    private static FilenameFilter musicOrDirectoryfilter = new FilenameFilter() {
         public boolean accept(File dir, String filename) {
             File sel = new File(dir, filename);
             return (!sel.isHidden()) && (filename.contains(FTYPE) || filename.contains(".MP3") || sel.isDirectory());
         }
     };
+    public static FilenameFilter getFileNameFilter(final boolean withDirectory) {
+        return new FilenameFilter() {
+            public boolean accept(File dir, String filename) {
+                File sel = new File(dir, filename);
+                return (!sel.isHidden()) && (filename.contains(FTYPE) || filename.contains(".MP3") || (withDirectory? sel.isDirectory() : false));
+            }
+        };
+    }
 }

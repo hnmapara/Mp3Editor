@@ -52,6 +52,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
 			holder = (ViewHolder) convertView.getTag();
 		}
 		File f = listOfFiles[position];
+        holder.filePath = f.getAbsolutePath();
 		if(f.exists() && f.isDirectory()) {
             convertView.findViewById(R.id.albumLable).setVisibility(View.GONE);
             convertView.findViewById(R.id.titleLable).setVisibility(View.INVISIBLE);
@@ -63,7 +64,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
 //            convertView.getBackground().setColorFilter(Color.parseColor("#D1D1E0"), PorterDuff.Mode.DARKEN);
             convertView.setBackgroundResource(R.drawable.list_folder_drawable);
 
-            holder.entryInfo.setText(f.list(Mp3Utility.musicOrDirectoryfilter).length + " entries" );
+            holder.entryInfo.setText(f.list(Mp3Utility.getFileNameFilter(true)).length + " entries" );
 
         }
 		if(f.exists() && !f.isDirectory()) {
@@ -76,11 +77,10 @@ public class ContentAdapter extends ArrayAdapter<String>{
                         holder.albumname.setText(mp3Info.albumName);
                     if(mp3Info.SongTitle!=null)
                         holder.title.setText(mp3Info.SongTitle);
-                    holder.saveButton.setTag(f.getAbsolutePath());
-                        holder.rowIcon.setImageResource(R.drawable.music);
-                        int p = getContext().getResources()
+                    holder.rowIcon.setImageResource(R.drawable.music);
+                    int p = getContext().getResources()
                                 .getDimensionPixelSize(R.dimen.music_icon_padding);
-                        holder.rowIcon.setPadding(p,p,p,p);
+                     holder.rowIcon.setPadding(p,p,p,p);
                      holder.filename.setText("File name: " + getItem(position));
                      holder.entryInfo.setText(Mp3Utility.formattedFileSize(f.length()));
                     } catch (Exception e){}
@@ -94,13 +94,14 @@ public class ContentAdapter extends ArrayAdapter<String>{
 		return super.getItemViewType(position);
 	}
 	
-	static class ViewHolder {
+	class ViewHolder {
 		TextView title;
 		TextView filename;
 		EditText albumname;
         ImageView rowIcon;
 		Button saveButton;
         TextView entryInfo;
+        String filePath;
 	}
 
 }
