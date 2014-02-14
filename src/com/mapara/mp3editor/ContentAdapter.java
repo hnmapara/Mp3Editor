@@ -13,15 +13,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mapara.mp3editor.helper.Mp3Utility;
+
 public class ContentAdapter extends ArrayAdapter<String>{
-	private String[] objects;
+    private static final String TAG = ContentAdapter.class.getSimpleName();
+    private String[] objects;
 	private File[] listOfFiles;
-	public ContentAdapter(Context context, 
-			int textViewResourceId, String[] objects, File[] files) {
+	public ContentAdapter(Context context, int textViewResourceId,
+                          String[] objects, File[] files) {
 		super(context, textViewResourceId, objects);
 		this.objects = objects;
 		this.listOfFiles = files;
-	}
+    }
 
 	@Override
 	public int getCount() {
@@ -35,6 +38,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+        Log.i(TAG, "Getview is getting called");
 		final ViewHolder holder;
 		if(convertView == null) {
 			holder = new ViewHolder();
@@ -47,18 +51,21 @@ public class ContentAdapter extends ArrayAdapter<String>{
 			holder.filename = (TextView) convertView.findViewById(R.id.filename);
 			holder.saveButton = (Button) convertView.findViewById(R.id.save);
             holder.entryInfo = (TextView) convertView.findViewById(R.id.entryinfo);
+            holder.musicButton = (ImageView) convertView.findViewById(R.id.musicbutton);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		File f = listOfFiles[position];
         holder.filePath = f.getAbsolutePath();
+        holder.position = position;
 		if(f.exists() && f.isDirectory()) {
             convertView.findViewById(R.id.albumLable).setVisibility(View.GONE);
             convertView.findViewById(R.id.titleLable).setVisibility(View.INVISIBLE);
 			holder.title.setVisibility(View.INVISIBLE);
 			holder.albumname.setVisibility(View.INVISIBLE);
 			holder.saveButton.setVisibility(View.GONE);
+            holder.musicButton.setVisibility(View.GONE);
             holder.filename.setText(getItem(position));
             holder.rowIcon.setImageResource(R.drawable.folder_img2);
             holder.rowIcon.setPadding(0, 0, 0, 0);
@@ -77,6 +84,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
                 holder.title.setVisibility(View.VISIBLE);
                 holder.albumname.setVisibility(View.VISIBLE);
                 holder.saveButton.setVisibility(View.VISIBLE);
+                holder.musicButton.setVisibility(View.VISIBLE);
                     try {
 					mp3Info = Mp3Utility.getMP3FileInfo2(f.getAbsolutePath());
 					Log.d(Mp3SearchActivity.TAG, "AlbumName : " + mp3Info.albumName);
@@ -90,6 +98,11 @@ public class ContentAdapter extends ArrayAdapter<String>{
                                 .getDimensionPixelSize(R.dimen.music_icon_padding);
                      holder.rowIcon.setPadding(p,p,p,p);
                      holder.filename.setText("File name: " + getItem(position));
+
+                     holder.musicButton.setImageResource(
+                             (FileListFragment.PREV_PLAYED_POSITION == position
+                                     && FileListFragment.PREV_PLAYED_POSITION_STATE)
+                                     ? R.drawable.stop_icon: R.drawable.play_icon);
                      holder.entryInfo.setText(Mp3Utility.formattedFileSize(f.length()));
                     } catch (Exception e){}
 		}
@@ -109,7 +122,9 @@ public class ContentAdapter extends ArrayAdapter<String>{
         ImageView rowIcon;
 		Button saveButton;
         TextView entryInfo;
+        ImageView musicButton;
         String filePath;
+        int position;
 	}
 
 }

@@ -15,16 +15,25 @@
     android:textStyle="bold" />
 <EditText
     android:id="@+id/titletext"
-    android:layout_width="match_parent"
+    android:layout_width="250dp"
     android:layout_height="wrap_content"
     android:textAppearance="@style/FileNameStyle"
-    android:layout_alignParentTop="true"
     android:layout_toRightOf="@+id/titleLable"
     android:hint="&lt;Click to set&gt;"
     android:singleLine="true"
     android:ellipsize="middle"
     android:background="#00000000"
-/>
+    android:longClickable="false"
+    android:layout_alignParentTop="true" />
+
+<ImageView
+        android:id="@+id/musicbutton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:onClick="playOrStopClick"
+        />
 
 <ImageView
     android:id="@+id/row_img"
@@ -65,6 +74,7 @@
     android:hint="&lt;Click to set&gt;"
     android:singleLine="true"
     android:background="#00000000"
+    android:longClickable="false"
     />
 
 <Button
@@ -73,7 +83,7 @@
     	android:layout_height="wrap_content"
         android:layout_below="@id/editalbuminfo"
     	android:text="Save"
-        android:onClick="albumInfoClick"
+        android:onClick="saveInfoClick"
         android:layout_alignParentBottom="true"
     	android:textAppearance="@style/FileNameStyle"
 />
@@ -86,4 +96,5 @@
         android:textColor="#808080"
     android:layout_alignParentBottom="true"
     android:layout_alignParentEnd="true" />
+
 </RelativeLayout>

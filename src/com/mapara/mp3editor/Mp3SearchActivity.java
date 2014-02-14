@@ -1,47 +1,30 @@
 package com.mapara.mp3editor;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import de.vdheide.mp3.ID3Exception;
-import de.vdheide.mp3.ID3v2DecompressionException;
-import de.vdheide.mp3.ID3v2Exception;
-import de.vdheide.mp3.ID3v2IllegalVersionException;
-import de.vdheide.mp3.ID3v2WrongCRCException;
-import de.vdheide.mp3.NoMP3FrameException;
+import java.util.Stack;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ListFragment;
-import android.app.AlertDialog.Builder;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.mapara.mp3editor.helper.Mp3Utility;
 
 public class Mp3SearchActivity extends Activity {
 	public static String[] mFilenameList;
     public static File[] mFileListfiles;
+    public Stack<String> pathStack = new Stack<String>();
+    private MediaPlayer mp;
 //    public static File defaultRootFile = Environment.getExternalStorageDirectory();
     public static File defaultRootFile = new File("/mnt");
     public static File mPath = defaultRootFile;
@@ -69,6 +52,7 @@ public class Mp3SearchActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        mp = new MediaPlayer();
 //		setContentView(R.layout.activity_main);
 //		showDialog(DIALOG_LOAD_FILE);
 	
@@ -91,7 +75,7 @@ public class Mp3SearchActivity extends Activity {
 			if(cursor!=null) cursor.close();
 		}
 	*/	
-		showDetails();
+		showDetails(false);
 	}
 	
 	
@@ -133,13 +117,16 @@ public class Mp3SearchActivity extends Activity {
 		super.onDestroy();
 	}
 
-	void showDetails() {
+	void showDetails(boolean reset) {
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		Log.d(TAG, "showDetails()... Creating ArrayListFragment");
-		
-		Fragment prev = getFragmentManager().findFragmentById(android.R.id.content);
-        if (prev != null) {        	
-            //ft.remove(prev);
+
+        Fragment currentFrg = getFragmentManager().findFragmentById(android.R.id.content);
+        Log.d(TAG, "showDetails()..." + currentFrg);
+        if(reset) {
+            ft.detach(currentFrg);
+            ft.attach(currentFrg).commit();
+            return;
         }
 
         FileListFragment list = new FileListFragment();
@@ -148,7 +135,7 @@ public class Mp3SearchActivity extends Activity {
 		
 	}
 
-    public void albumInfoClick(View v) {
+    public void saveInfoClick(View v) {
 	    RelativeLayout parentRow = (RelativeLayout) v.getParent();
         EditText child = (EditText) parentRow.findViewById(R.id.editalbuminfo);
         String filePath = ((ContentAdapter.ViewHolder)parentRow.getTag()).filePath;
@@ -157,6 +144,27 @@ public class Mp3SearchActivity extends Activity {
         Mp3Utility.setMP3FileInfo2(filePath, new Mp3Info(child.getText().toString(), ""));
         Mp3Utility.scanSDCardFile(getApplicationContext(), new String[] {filePath});
 
+    }
+
+    public void playOrStopClick(View v) throws IOException {
+        RelativeLayout parentRow = (RelativeLayout) v.getParent();
+        String filePath = ((ContentAdapter.ViewHolder)parentRow.getTag()).filePath;
+        Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
+        int position = ((ContentAdapter.ViewHolder)parentRow.getTag()).position;
+        if(position == FileListFragment.PREV_PLAYED_POSITION &&
+                FileListFragment.PREV_PLAYED_POSITION_STATE) {
+            playMusicFrom(null, false);
+            ((ImageView)v).setImageResource(R.drawable.play_icon);
+            FileListFragment.PREV_PLAYED_POSITION_STATE = false;
+        } else {
+            playMusicFrom(filePath, false);
+            ((ImageView)v).setImageResource(R.drawable.stop_icon);
+            FileListFragment.PREV_PLAYED_POSITION_STATE = true;
+        }
+        FileListFragment.PREV_PLAYED_POSITION = position;
+
+        FileListFragment frg = (FileListFragment) getFragmentManager().findFragmentById(android.R.id.content);
+        if(frg!=null) frg.refresh();
     }
 /*
 	@Override
@@ -231,15 +239,46 @@ public class Mp3SearchActivity extends Activity {
 
             if (keyCode == KeyEvent.KEYCODE_BACK)
             {
-                if (getFragmentManager().getBackStackEntryCount() == 1)
-                    this.finish();
-                else
-                    getFragmentManager().popBackStack();
-                    //removeCurrentFragment();
-                return false;
+//                if (getFragmentManager().getBackStackEntryCount() == 1)
+//                    this.finish();
+//                else
+//                    getFragmentManager().popBackStackImmediate();
+//                    //removeCurrentFragment();
+//                return true;
+                FileListFragment frg = (FileListFragment)getFragmentManager().findFragmentById(android.R.id.content);
+                if(frg!=null) {
+                    File parent = mPath.getParentFile();
+                    if(parent!=null && parent.getAbsolutePath().equalsIgnoreCase("/")) {
+                        this.finish();
+
+                    } else if(parent!=null && parent.exists()) {
+                        mPath = parent;
+                        frg.resetAdapter();
+
+                    }
+                    try {
+                        playMusicFrom(null, true);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return true;
+                }
             }
 
             return super.onKeyDown(keyCode, event);
+    }
+
+    public void playMusicFrom(String audioFilePath, boolean hardStop) throws IOException {
+        if(hardStop || mp.isPlaying()) {
+            mp.stop();
+            mp.reset();
+        }
+
+        if(!TextUtils.isEmpty(audioFilePath)) {
+            mp.setDataSource(audioFilePath);
+            mp.prepare();
+            mp.start();
+        }
     }
 
 }

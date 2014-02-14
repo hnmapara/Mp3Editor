@@ -15,9 +15,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.mapara.mp3editor.helper.Mp3Utility;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by harshit on 2/3/14.
@@ -27,6 +29,9 @@ public class FileListFragment extends ListFragment {
     private static final String TAG = FileListFragment.class.getSimpleName();
     private String[] filenames;
     private File[] files;
+    public static int PREV_PLAYED_POSITION = -1;
+    public static boolean PREV_PLAYED_POSITION_STATE = false;
+    private ContentAdapter adapter;
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -35,30 +40,32 @@ public class FileListFragment extends ListFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, final View view, int i, long l) {
                 final EditText input = new EditText(getActivity());
-                String filePath = ((ContentAdapter.ViewHolder)view.getTag()).filePath;
+                Log.i(TAG, view instanceof EditText ? " EditText "
+                        : view instanceof TextView ? " TextView " : view.toString());
+                String filePath = ((ContentAdapter.ViewHolder) view.getTag()).filePath;
                 final File f = new File(filePath);
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Update Album Name for : " + f.getName())
+                builder.setTitle("Update Album Name for : " + f.getName())
                         .setMessage("Enter album name below and it will applied to all files under this directory")
                         .setView(input)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 final Editable value = input.getText();
                                 final ProgressBar progressBar = new ProgressBar(getActivity());
-                                new AsyncTask<Void, Void,Void>() {
+                                new AsyncTask<Void, Void, Void>() {
 
                                     @Override
                                     protected Void doInBackground(Void[] objects) {
                                         File[] files = f.listFiles(Mp3Utility.getFileNameFilter(false));
                                         String[] paths = new String[files.length];
-                                        int index=0;
-                                        for(File file: files) {
-                                            if(!file.isDirectory()) {
+                                        int index = 0;
+                                        for (File file : files) {
+                                            if (!file.isDirectory()) {
                                                 Mp3Utility.setMP3FileInfo2(file.getAbsolutePath(), new Mp3Info(value.toString(), ""));
                                                 paths[index++] = file.getAbsolutePath();
                                             }
                                         }
-                                        Mp3Utility.scanSDCardFile(getActivity(),paths);
+                                        Mp3Utility.scanSDCardFile(getActivity(), paths);
                                         return null;
                                     }
 
@@ -76,7 +83,7 @@ public class FileListFragment extends ListFragment {
                                     }
                                 }.execute();
                             }
-                            })
+                        })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 // Do nothing.
@@ -102,9 +109,8 @@ public class FileListFragment extends ListFragment {
             return view;
         }
         Log.i(TAG,"ArrayListFragment - In onCreateView - files : " + files.length );
-
-        setListAdapter(new ContentAdapter(getActivity(),R.layout.list_item,filenames,files));
-//			setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, filenames));
+        adapter = new ContentAdapter(getActivity(),R.layout.list_item,filenames,files);
+        setListAdapter(adapter);
         View view = inflater.inflate(android.R.layout.list_content, container, false);
         view.setBackgroundColor(0xffffffff);
 
@@ -144,6 +150,8 @@ public class FileListFragment extends ListFragment {
     public void onStop() {
         Log.i(TAG,"ArrayListFragment - In onStop");
         super.onStop();
+        FileListFragment.PREV_PLAYED_POSITION = -1;
+        FileListFragment.PREV_PLAYED_POSITION_STATE = false;
     }
 
 
@@ -172,12 +180,37 @@ public class FileListFragment extends ListFragment {
         Log.i(TAG, "Path of the selected file :" + file.getAbsolutePath());
         if(file.exists() && file.isDirectory()) {
             Mp3SearchActivity.mPath = file;
-            ((Mp3SearchActivity)getActivity()).showDetails();
+            resetAdapter();//((Mp3SearchActivity)getActivity()).showDetails(true);
         }else {
 
             TextView tv =(TextView)v.findViewById(R.id.filename);
             Log.i(TAG, "It's not going in.." + tv.getText());
         }
     }
+
+    public void refresh() {
+        if(adapter!=null)
+            adapter.notifyDataSetChanged();
+    }
+
+    public void resetAdapter() {
+        Mp3SearchActivity activity = ((Mp3SearchActivity)getActivity());
+        try {
+            activity.playMusicFrom(null, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        activity.loadFileList();
+        filenames = Mp3SearchActivity.mFilenameList;
+        files = Mp3SearchActivity.mFileListfiles;
+        adapter = null;
+        FileListFragment.PREV_PLAYED_POSITION = -1;
+        FileListFragment.PREV_PLAYED_POSITION_STATE = false;
+        Log.i(TAG,"ArrayListFragment - In onCreateView - files : " + files.length );
+        adapter = new ContentAdapter(getActivity(),R.layout.list_item,filenames,files);
+        setListAdapter(adapter);
+        refresh();
+    }
+
 
 }

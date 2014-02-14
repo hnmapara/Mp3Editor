@@ -1,4 +1,4 @@
-package com.mapara.mp3editor;
+package com.mapara.mp3editor.helper;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -11,6 +11,8 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.mapara.mp3editor.Mp3Info;
 
 import org.cmc.music.common.ID3WriteException;
 import org.cmc.music.metadata.IMusicMetadata;
