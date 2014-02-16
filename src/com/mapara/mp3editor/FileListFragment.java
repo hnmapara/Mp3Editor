@@ -2,6 +2,7 @@ package com.mapara.mp3editor;
 
 import android.app.AlertDialog;
 import android.app.ListFragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class FileListFragment extends ListFragment {
                         : view instanceof TextView ? " TextView " : view.toString());
                 String filePath = ((ContentAdapter.ViewHolder) view.getTag()).filePath;
                 final File f = new File(filePath);
+                final ProgressDialog[] progress = new ProgressDialog[1];
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Update Album Name for : " + f.getName())
                         .setMessage("Enter album name below and it will applied to all files under this directory")
@@ -51,11 +53,11 @@ public class FileListFragment extends ListFragment {
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 final Editable value = input.getText();
-                                final ProgressBar progressBar = new ProgressBar(getActivity());
                                 new AsyncTask<Void, Void, Void>() {
 
                                     @Override
                                     protected Void doInBackground(Void[] objects) {
+                                        Log.d(TAG, "doInBackground()");
                                         File[] files = f.listFiles(Mp3Utility.getFileNameFilter(false));
                                         String[] paths = new String[files.length];
                                         int index = 0;
@@ -72,21 +74,23 @@ public class FileListFragment extends ListFragment {
                                     @Override
                                     protected void onPreExecute() {
                                         super.onPreExecute();
-                                        input.setVisibility(View.GONE);
-                                        builder.setView(progressBar);
-
+                                        Log.d(TAG, "onPreExecute()");
+                                        progress[0] =ProgressDialog.show(getActivity(), "Updating Album...",
+                                                "Please wait while your music files are being updated...", true);
                                     }
 
                                     @Override
                                     protected void onPostExecute(Void v) {
                                         super.onPostExecute(v);
+                                        Log.d(TAG, "onPostExecute()");
+                                        progress[0].dismiss();
                                     }
                                 }.execute();
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                // Do nothing.
+                                Log.d(TAG, "onClick() on cancel");
                             }
                         }).show();
                 return true;
