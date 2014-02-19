@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.mapara.mp3editor.helper.Mp3Utility;
 
@@ -34,7 +35,7 @@ public class FileListFragment extends ListFragment {
     private File[] files;
     public static int PREV_PLAYED_POSITION = -1;
     public static boolean PREV_PLAYED_POSITION_STATE = false;
-    private static final String TEST_DEVICE_ID = "INSERT_YOUR_TEST_DEVICE_ID_HERE";
+    private static final String TEST_DEVICE_ID = "ca-app-pub-1747424949918672/2304709741";
 
     private ContentAdapter adapter;
     @Override
@@ -123,18 +124,20 @@ public class FileListFragment extends ListFragment {
         Log.i(TAG,"ArrayListFragment - In onCreateView - files : " + files.length );
         adapter = new ContentAdapter(getActivity(),R.layout.list_item,filenames,files);
         setListAdapter(adapter);
-        View view = inflater.inflate(android.R.layout.list_content, container, false);
-//        View view = inflater.inflate(R.layout.fragment_layout, container, false);
+//        View view = inflater.inflate(android.R.layout.list_content, container, false);
+        View view = inflater.inflate(R.layout.fragment_layout, container, false);
         view.setBackgroundColor(0xffffffff);
-        /*
+
         // Create the adView.
         AdView adView = (AdView) view.findViewById(R.id.adView);
+//        adView.setAdSize(AdSize.SMART_BANNER);
+//        adView.setAdUnitId("INSERT_YOUR_AD_UNIT_ID_HERE");
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .addTestDevice(TEST_DEVICE_ID)
                 .build();
         adView.loadAd(adRequest);
-        */
+
 
         return view;
     }
