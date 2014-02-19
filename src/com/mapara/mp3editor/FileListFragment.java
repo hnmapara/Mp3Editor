@@ -17,6 +17,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.mapara.mp3editor.helper.Mp3Utility;
 
 import java.io.File;
@@ -32,6 +34,8 @@ public class FileListFragment extends ListFragment {
     private File[] files;
     public static int PREV_PLAYED_POSITION = -1;
     public static boolean PREV_PLAYED_POSITION_STATE = false;
+    private static final String TEST_DEVICE_ID = "INSERT_YOUR_TEST_DEVICE_ID_HERE";
+
     private ContentAdapter adapter;
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -45,11 +49,15 @@ public class FileListFragment extends ListFragment {
                         : view instanceof TextView ? " TextView " : view.toString());
                 String filePath = ((ContentAdapter.ViewHolder) view.getTag()).filePath;
                 final File f = new File(filePath);
+                final File[] files = f.listFiles(Mp3Utility.getFileNameFilter(false));
                 final ProgressDialog[] progress = new ProgressDialog[1];
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
                 builder.setTitle("Update Album Name for : " + f.getName())
-                        .setMessage("Enter album name below and it will applied to all files under this directory")
-                        .setView(input)
+                        .setMessage(files.length == 0 ? "No music files are found in this directory. You may want to check" +
+                                " sub-directories." :
+                                "Enter album name below and it will applied to all files under this directory.")
+                        .setView(files.length==0? null : input)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 final Editable value = input.getText();
@@ -58,7 +66,7 @@ public class FileListFragment extends ListFragment {
                                     @Override
                                     protected Void doInBackground(Void[] objects) {
                                         Log.d(TAG, "doInBackground()");
-                                        File[] files = f.listFiles(Mp3Utility.getFileNameFilter(false));
+                                        if(files.length==0) return null;
                                         String[] paths = new String[files.length];
                                         int index = 0;
                                         for (File file : files) {
@@ -75,7 +83,7 @@ public class FileListFragment extends ListFragment {
                                     protected void onPreExecute() {
                                         super.onPreExecute();
                                         Log.d(TAG, "onPreExecute()");
-                                        progress[0] =ProgressDialog.show(getActivity(), "Updating Album...",
+                                        progress[0] = ProgressDialog.show(getActivity(), "Updating Album...",
                                                 "Please wait while your music files are being updated...", true);
                                     }
 
@@ -116,7 +124,17 @@ public class FileListFragment extends ListFragment {
         adapter = new ContentAdapter(getActivity(),R.layout.list_item,filenames,files);
         setListAdapter(adapter);
         View view = inflater.inflate(android.R.layout.list_content, container, false);
+//        View view = inflater.inflate(R.layout.fragment_layout, container, false);
         view.setBackgroundColor(0xffffffff);
+        /*
+        // Create the adView.
+        AdView adView = (AdView) view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice(TEST_DEVICE_ID)
+                .build();
+        adView.loadAd(adRequest);
+        */
 
         return view;
     }

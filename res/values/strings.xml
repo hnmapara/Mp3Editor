@@ -5,4 +5,8 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
 
+    <string-array name="default_support_email">
+        <item>harshit.mapara@gmail.com</item>
+    </string-array>
+
 </resources>

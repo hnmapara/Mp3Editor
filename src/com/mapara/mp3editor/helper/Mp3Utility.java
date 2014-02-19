@@ -5,11 +5,11 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.mapara.mp3editor.Mp3Info;
@@ -31,15 +31,24 @@ import de.vdheide.mp3.NoMP3FrameException;
 import de.vdheide.mp3.TagContent;
 import de.vdheide.mp3.TagFormatException;
 
+
 public class Mp3Utility {
 	
 	public static final String TAG = "Mp3Utility";
 
 	public static Mp3Info getMP3FileInfo(String mp3FilePath) throws ID3v2WrongCRCException, ID3v2DecompressionException, ID3v2IllegalVersionException, IOException, NoMP3FrameException {
 		MP3File mp3File = new MP3File(mp3FilePath);
+        Mp3Info info = new Mp3Info();
 		TagContent tagContent = null;
 		try {
 			tagContent = mp3File.getAlbum();
+                info.albumName = tagContent.getTextContent();
+            tagContent = mp3File.getTitle();
+                info.songTitle = tagContent.getTextContent();
+            tagContent = mp3File.getTime();
+                info.songDuration = tagContent.getTextContent();
+            tagContent = mp3File.getArtist();
+                info.artistName = tagContent.getTextContent();
 		} catch (FrameDamagedException e) {
 			Log.e(TAG, e.toString());
 			return null;
@@ -89,6 +98,7 @@ public class Mp3Utility {
                 Number track_number = metadata.getTrackNumber();
                 Log.i(TAG, "album - " +album);
                 Log.i(TAG, "Song title - " + title);
+                Log.i(TAG, "Duration - " + convertTimeSecToMin(metadata.getDurationSeconds()));
             }catch (Exception e) {
                 e.printStackTrace();
             }
@@ -153,5 +163,26 @@ public class Mp3Utility {
                         || (withDirectory? (sel.isDirectory() ? (sel.list()==null? false : true) : false) : false));
             }
         };
+    }
+
+    public static String convertTimeSecToMin(String seconds) {
+        int s = -1;
+        try {
+            s = Integer.parseInt(seconds);
+        } catch (NumberFormatException ne) {
+            Log.e(TAG, "convertTimeSecToMin() " + ne);
+            return null;
+        }
+        int min = s/60;
+        int sec = s % 60;
+        return String.format("%d:%02d", min, sec);
+    }
+
+    public static String convertTimeMilliToMin(int ms) {
+        return String.format("%d m, %d s",
+                TimeUnit.MILLISECONDS.toMinutes(ms),
+                TimeUnit.MILLISECONDS.toSeconds(ms) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(ms))
+        );
     }
 }

@@ -1,8 +1,10 @@
 package com.mapara.mp3editor;
 
 import java.io.File;
+import java.io.IOException;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +54,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
 			holder.saveButton = (Button) convertView.findViewById(R.id.save);
             holder.entryInfo = (TextView) convertView.findViewById(R.id.entryinfo);
             holder.musicButton = (ImageView) convertView.findViewById(R.id.musicbutton);
+            holder.durationInfo = (TextView) convertView.findViewById(R.id.duration);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -66,6 +69,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
 			holder.albumname.setVisibility(View.INVISIBLE);
 			holder.saveButton.setVisibility(View.GONE);
             holder.musicButton.setVisibility(View.GONE);
+            holder.durationInfo.setVisibility(View.GONE);
             holder.filename.setText(getItem(position));
             holder.rowIcon.setImageResource(R.drawable.folder_img2);
             holder.rowIcon.setPadding(0, 0, 0, 0);
@@ -79,20 +83,30 @@ public class ContentAdapter extends ArrayAdapter<String>{
         }
 		else if(f.exists() && !f.isDirectory()) {
 				Mp3Info mp3Info;
-                convertView.findViewById(R.id.albumLable).setVisibility(View.VISIBLE);
+                final MediaPlayer mp = new MediaPlayer();
+                try {
+                    mp.setDataSource(f.getAbsolutePath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    mp.release();
+                }
+            convertView.findViewById(R.id.albumLable).setVisibility(View.VISIBLE);
                 convertView.findViewById(R.id.titleLable).setVisibility(View.VISIBLE);
                 holder.title.setVisibility(View.VISIBLE);
                 holder.albumname.setVisibility(View.VISIBLE);
                 holder.saveButton.setVisibility(View.VISIBLE);
                 holder.musicButton.setVisibility(View.VISIBLE);
+                holder.durationInfo.setVisibility(View.VISIBLE);
                     try {
 					mp3Info = Mp3Utility.getMP3FileInfo2(f.getAbsolutePath());
 					Log.d(Mp3SearchActivity.TAG, "AlbumName : " + mp3Info.albumName);
-					Log.d(Mp3SearchActivity.TAG, "SongTitle : "+ mp3Info.SongTitle);
+					Log.d(Mp3SearchActivity.TAG, "songTitle : "+ mp3Info.songTitle);
+                    Log.d(Mp3SearchActivity.TAG, "songDuration : "+ mp3Info.songDuration);
+                    Log.d(Mp3SearchActivity.TAG, "ArtistName : "+ mp3Info.artistName);
 					if(mp3Info.albumName!=null)
                         holder.albumname.setText(mp3Info.albumName);
-                    if(mp3Info.SongTitle!=null)
-                        holder.title.setText(mp3Info.SongTitle);
+                    if(mp3Info.songTitle !=null)
+                        holder.title.setText(mp3Info.songTitle);
                     holder.rowIcon.setImageResource(R.drawable.music);
                     int p = getContext().getResources()
                                 .getDimensionPixelSize(R.dimen.music_icon_padding);
@@ -104,6 +118,18 @@ public class ContentAdapter extends ArrayAdapter<String>{
                                      && FileListFragment.PREV_PLAYED_POSITION_STATE)
                                      ? R.drawable.stop_icon: R.drawable.play_icon);
                      holder.entryInfo.setText(Mp3Utility.formattedFileSize(f.length()));
+
+                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                         @Override
+                         public void onPrepared(MediaPlayer mediaPlayer) {
+                             holder.durationInfo.setText(Mp3Utility.convertTimeMilliToMin(
+                                     mp.getDuration()));
+                             mp.release();
+
+                         }
+                     });
+                     mp.prepare();
+
                     } catch (Exception e){}
 		}
 
@@ -122,6 +148,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
         ImageView rowIcon;
 		Button saveButton;
         TextView entryInfo;
+        TextView durationInfo;
         ImageView musicButton;
         String filePath;
         int position;
