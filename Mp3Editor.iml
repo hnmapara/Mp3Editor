@@ -68,12 +68,10 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 18 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="android-support-v4" level="project" />
     <orderEntry type="library" exported="" name="java_mp3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-13.0.0" level="project" />
     <orderEntry type="library" exported="" name="MyID3_for_Android" level="project" />
     <orderEntry type="library" exported="" name="play-services-4.0.30" level="project" />
-    <orderEntry type="library" exported="" name="google-play-services" level="project" />
   </component>
 </module>
 

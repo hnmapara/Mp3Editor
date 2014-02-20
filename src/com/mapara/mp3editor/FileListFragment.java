@@ -35,7 +35,6 @@ public class FileListFragment extends ListFragment {
     private File[] files;
     public static int PREV_PLAYED_POSITION = -1;
     public static boolean PREV_PLAYED_POSITION_STATE = false;
-    private static final String TEST_DEVICE_ID = "ca-app-pub-1747424949918672/2304709741";
 
     private ContentAdapter adapter;
     @Override
@@ -134,10 +133,9 @@ public class FileListFragment extends ListFragment {
 //        adView.setAdUnitId("INSERT_YOUR_AD_UNIT_ID_HERE");
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .addTestDevice(TEST_DEVICE_ID)
                 .build();
         adView.loadAd(adRequest);
-
+        Log.i(TAG, "Is this test devicce ?" + adRequest.isTestDevice(getActivity()));
 
         return view;
     }
