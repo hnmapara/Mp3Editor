@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.zip.GZIPOutputStream;
-
+//Credit to Ross for helping in this crash report
 public class CrashLog implements Thread.UncaughtExceptionHandler
 {
     private static final String CrashFile = "crash.log";
@@ -222,7 +222,7 @@ public class CrashLog implements Thread.UncaughtExceptionHandler
             }
         }
 
-        void clear() { _get = _put = 0; }
+/*        void clear() { _get = _put = 0; }
 
         void println(String line)
         {
@@ -260,6 +260,6 @@ public class CrashLog implements Thread.UncaughtExceptionHandler
                     }
                 }
             }
-        }
+        } */
     }
 }
