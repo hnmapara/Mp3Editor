@@ -111,7 +111,7 @@ public class ContentAdapter extends ArrayAdapter<String>{
                     int p = getContext().getResources()
                                 .getDimensionPixelSize(R.dimen.music_icon_padding);
                      holder.rowIcon.setPadding(p,p,p,p);
-                     holder.filename.setText("File name: " + getItem(position));
+                     holder.filename.setText("File : " + getItem(position));
 
                      holder.musicButton.setImageResource(
                              (FileListFragment.PREV_PLAYED_POSITION == position

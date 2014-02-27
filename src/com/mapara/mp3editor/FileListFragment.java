@@ -56,7 +56,7 @@ public class FileListFragment extends ListFragment {
                 builder.setTitle("Update Album Name for : " + f.getName())
                         .setMessage(files.length == 0 ? "No music files are found in this directory. You may want to check" +
                                 " sub-directories." :
-                                "Enter album name below and it will applied to all files under this directory.")
+                                "Enter album name below and it will be applied to all files under this directory.")
                         .setView(files.length==0? null : input)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
