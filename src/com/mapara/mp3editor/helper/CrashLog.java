@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2013 by NetApp, Inc. All rights reserved.
- */
-
 package com.mapara.mp3editor.helper;
 
 import android.content.Context;
@@ -20,6 +16,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.zip.GZIPOutputStream;
+
 //Credit to Ross for helping in this crash report
 public class CrashLog implements Thread.UncaughtExceptionHandler
 {
